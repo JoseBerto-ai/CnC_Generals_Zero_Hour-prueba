@@ -94,6 +94,7 @@ public:
 	Bool m_useDrawModuleLOD;
 	Bool m_useFpsLimit;
 	Bool m_dumpAssetUsage;
+	Bool m_disableCRCChecks;  ///< OPTIMIZATION: Disable CRC checks for +2% FPS (use only for local/testing)
 	Int m_framesPerSecondLimit;
 	Int	m_chipSetType;	///<See W3DShaderManager::ChipsetType for options
 	Bool m_windowed;

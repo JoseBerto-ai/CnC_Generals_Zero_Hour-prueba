@@ -2233,7 +2233,8 @@ void GameLogic::processCommandList( CommandList *list )
 		logicMessageDispatcher( msg, NULL );
 	}
 
-	if (m_shouldValidateCRCs && !TheNetwork->sawCRCMismatch())
+	// OPTIMIZATION TIER 1.4: Skip CRC validation if disabled
+	if (!TheGlobalData->m_disableCRCChecks && m_shouldValidateCRCs && !TheNetwork->sawCRCMismatch())
 	{
 		Bool sawCRCMismatch = FALSE;
 		Int numPlayers = 0;
@@ -3127,7 +3128,10 @@ void GameLogic::update( void )
 	Bool generateForSolo = isSoloGameOrReplay && ((m_frame % REPLAY_CRC_INTERVAL) == 0);
 #endif // DEBUG_CRC
 
-	if (generateForSolo || generateForMP)
+	// OPTIMIZATION TIER 1.4: Skip CRC checks if disabled (set DisableCRCChecks = yes in GameData.ini)
+	// Benefit: +2% FPS (CRC calculation is expensive on large game states)
+	// WARNING: Only use for local testing! Disabling CRCs in multiplayer will cause desyncs to go undetected
+	if (!TheGlobalData->m_disableCRCChecks && (generateForSolo || generateForMP))
 	{
 		m_CRC = getCRC( CRC_RECALC );
 		if (isMPGameOrReplay)
