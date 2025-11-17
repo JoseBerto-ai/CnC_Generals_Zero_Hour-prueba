@@ -79,6 +79,7 @@
 #include "GameLogic/CrateSystem.h"
 #include "GameLogic/FPUControl.h"
 #include "GameLogic/GameLogic.h"
+#include "GameLogic/AIThrottleManager.h"  // OPTIMIZATION TIER 2.1
 #include "GameLogic/Locomotor.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/Module/AIUpdate.h"
@@ -386,6 +387,10 @@ void GameLogic::init( void )
 	TheScriptEngine = NEW ScriptEngine;
 	TheScriptEngine->init();
 	TheScriptEngine->setName("TheScriptEngine");
+
+	// OPTIMIZATION TIER 2.1: Initialize AI Throttle Manager
+	TheAIThrottleManager->init(AIThrottleConfig());
+	TheAIThrottleManager->reset();
 
 	// create a team for the player
 	//DEBUG_ASSERTCRASH(ThePlayerList, ("null ThePlayerList"));
@@ -3087,6 +3092,12 @@ void GameLogic::update( void )
 	DEBUG_ASSERTCRASH(TheGameLogic == this, ("hmm, TheGameLogic is not right"));
 	UnsignedInt now = TheGameLogic->getFrame();
 	TheGameClient->setFrame(now);
+
+	// OPTIMIZATION TIER 2.1: Update AI Throttle Manager each frame
+	if (TheAIThrottleManager)
+	{
+		TheAIThrottleManager->update();
+	}
 
 	// update (execute) scripts
 	{
